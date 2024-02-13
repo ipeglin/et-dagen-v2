@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   if (!hasAccess(user, ['admin']))
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (firebase/user-not-authorized).',
+      statusMessage: 'User not authorized',
     })
 
   // get request body

@@ -35,25 +35,6 @@
             GitHub
           </NuxtLink>
         </li>
-        <li>
-          <span class="header fade text-h4">{{
-            $t('footer.header.some')
-          }}</span>
-          <NuxtLink to="https://www.instagram.com/etdagene/" target="_blank">
-            Instagram
-          </NuxtLink>
-          <NuxtLink to="https://www.facebook.com/etdagen" target="_blank">
-            Facebook
-          </NuxtLink>
-          <!-- eslint-disable vue/max-len -->
-          <NuxtLink
-            :to="`https://www.linkedin.com/company/elektronikk-og-teknologidagene-ntnu/`"
-            target="_blank"
-          >
-            <!-- eslint-enable -->
-            Linkedin
-          </NuxtLink>
-        </li>
       </ul>
     </section>
     <section class="bottom">

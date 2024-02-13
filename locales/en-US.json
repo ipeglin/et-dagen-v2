@@ -9,21 +9,14 @@
     "program_nav": "SEE PROGRAM",
     "company": "My Events"
   },
-  "home": {
-    "banner": {
-      "slogan": "Explore your future workplace"
-    }
-  },
   "user": {
     "sign_in": "Sign in",
     "sign_out": "Sign out",
     "sign_up": "Register user",
     "information": {
-      "title": "Information",
       "studyprogramme": "Study Programme",
       "currentyear": "Current Year",
-      "dietaryrestrictions": "Allergies and Restrictions",
-      "events": "My Events"
+      "dietaryrestrictions": "Allergies and Restrictions"
     },
     "register": {
       "title": "Register user",
@@ -157,63 +150,6 @@
   },
   "alert": {
     "close_alert": "Close",
-    "default_message": "Oi! Noe gikk galt.",
-    "api": {
-      "error": {
-        "general": {
-          "missing-data": "Missing data"
-        },
-        "firebase": {
-          "user-not-found": "User not found",
-          "user-not-authorized": "User not authorized",
-          "not-signed-in": "You are not signed in",
-          "storage": {
-            "missing-file-or-path": "File or filepath not specified",
-            "unsupported-file-type": "Invalid file type",
-            "cannot-upload-file": "Failed to upload file"
-          }
-        },
-        "code": {
-          "not-found": "Code not found",
-          "missing-company-uid": "companyUID missing"
-        },
-        "company": {
-          "not-found": "Company not found",
-          "require-company-uid": "Company users must spesify companyUID",
-          "missing-name-webpage-type": "Missing name, webpage or type"
-        },
-        "event": {
-          "not-found": "Event doesn't exist",
-          "not-owner": "Cannot modify other companies' events",
-          "missing-event-uid": "eventUID missing",
-          "incorrect-capacity": "Capacity must be a number or null",
-          "wrong-format-capacity": "Capacity must be a number larger than zero",
-          "start-after-end": "Start time must be before end time",
-          "registration-after-event": "Registration must end before event starts",
-          "registration-start-after-end": "Registration must start before it ends",
-          "register": {
-            "registration-unnecessary": "Registration is not necessary for this event",
-            "user-not-registered": "User not registered for this event",
-            "already-registered": "User already registered for this event",
-            "registration-closed": "Registration window is closed",
-            "event-is-full": "Event is full",
-            "not-owner": "Cannot register other users"
-          }
-        },
-        "job": {
-          "not-found": "Job not found",
-          "missing-job-uid": "jobUID missing",
-          "invalid-date": "Date format must be of type ISO 8601",
-          "cannot-remove-single-field": "Cannot remove a single field from database entry"
-        },
-        "user": {
-          "not-found": "User not found",
-          "doesnt-exists": "User doesn't exist",
-          "missing-programme": "studyProgram missing",
-          "invalid-code": "Invalid registration code"
-        }
-      }
-    },
     "error": {
       "default": "An error occured",
       "form": {
@@ -221,7 +157,6 @@
         "invalid": "Invalid form"
       },
       "firebase": {
-        "user_not_authorized": "User not authorized",
         "email_in_use": "Email already in use",
         "invalid_email": "Invalid email address",
         "user_not_found": "User not found",
@@ -291,12 +226,7 @@
     "standmap": "Stand Map",
     "event": {
       "sign_up": "Sign up",
-      "opt_out": {
-        "name": "Opt out",
-        "confirmtext": "Are you sure you want to opt out?",
-        "confirm": "Yes, remove me",
-        "abort": "No, abort"
-      },
+      "opt_out": "Opt out",
       "sign_in_to_register": "Sign in to register",
       "registration_closed": "Registration in not open"
     }
@@ -480,7 +410,7 @@
       "attributes": {
         "title": "Job Title",
         "company": "Company",
-        "description": "Job Description (mandatory)",
+        "description": "Job Description",
         "deadline": "Application Deadline",
         "application_link": "Job advertisement link",
         "jobtype": {
@@ -506,7 +436,7 @@
         "title": "Title",
         "company": "Company",
         "capacity": "Capacity",
-        "description": "Description (mandatory)",
+        "description": "Description",
         "location": {
           "name": "Name of Place",
           "map": "Map Link"
@@ -575,8 +505,7 @@
     "header": {
       "resources": "Resources",
       "organisation": "Organisation",
-      "join": "Company?",
-      "some": "Follow us"
+      "join": "Wish to join us?"
     },
     "link": {
       "contact": "Contact Us",
@@ -587,13 +516,13 @@
   "dietary_restrictions": {
     "name": "Allergens and restrictions",
     "gluten": "Gluten",
-    "shellfish": "Shellfish",
+    "shellfish": "shellfish",
     "citrus": "Citrus fruits",
     "egg": "Egg",
     "fish": "Fish",
     "peanuts": "Peanuts",
     "soy": "Soy",
-    "milk": "Milk proteins",
+    "milk": "Milk",
     "nuts": "Nuts",
     "celery": "Celery",
     "mustard": "Mustard",
@@ -615,17 +544,5 @@
     "thursday": "Thursday",
     "friday": "Friday",
     "saturday": "Saturday"
-  },
-  "formattext": {
-    "bold": "Bold",
-    "italic": "Italic",
-    "strikethrough": "Strikethrough",
-    "paragraph": "Paragraph",
-    "heading": "Heading",
-    "bulletlist": "Bullet list",
-    "numberedlist": "Numbered list",
-    "linebreak": "Line break",
-    "undo": "Undo",
-    "redo": "Redo"
   }
 }

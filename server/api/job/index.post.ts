@@ -30,13 +30,13 @@ export default defineEventHandler(async (event) => {
   )
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (general/missing-data).',
+      statusMessage: 'Not all data is defined',
     })
 
   if (!isValidDate(deadline))
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (job/invalid-date).',
+      statusMessage: 'Date must be of the ISO 8601 format',
     })
 
   const isAdmin = hasAccess(user, ['admin'])
@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
   if (!isAdmin && !isCompanyAdmin)
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (firebase/user-not-authorized).',
+      statusMessage: 'User not authorized',
     })
 
   // reference to companies
@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
   if (!data)
     throw createError({
       statusCode: 404,
-      statusMessage: 'Error (company/not-found).',
+      statusMessage: 'Company not found',
     })
 
   const jobsRef = db.ref('jobs')

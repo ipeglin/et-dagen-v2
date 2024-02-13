@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
   )
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (general/missing-data).',
+      statusMessage: 'Not all data is defined',
     })
 
   // Check if user is authorized
@@ -37,12 +37,12 @@ export default defineEventHandler(async (event) => {
     if (user.companyUID !== companyUID)
       throw createError({
         statusCode: 401,
-        statusMessage: 'Error (event/not-owner).',
+        statusMessage: 'Company users cannot post events for other companies',
       })
   } else if (!hasAccess(user, ['admin']))
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (firebase/user-not-authorized).',
+      statusMessage: 'User not authenticated',
     })
 
   // Check if capacity is legal
@@ -55,35 +55,46 @@ export default defineEventHandler(async (event) => {
   if (typeof capacity !== 'number' && !(capacity === null) && capacity <= 0)
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (event/wrong-format-capacity).',
+      statusMessage: 'Capacity has to be a number and larger than 0',
     })
 
   // check if endtime is after starttime
   if (date.start > date.end)
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (event/start-after-end).',
+      statusMessage: 'Start time has to be before end time',
     })
 
   // registration window must be before event start
   if (registration.start > date.start || registration.end > date.start)
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (event/registration-after-event).',
+      statusMessage:
+        'Sign up and opt out timestamps must be before event start',
     })
 
   // registration window must open before it closes
   if (capacity && registration.start > registration.end)
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (event/registration-start-after-end).',
+      statusMessage: 'Sign up start must be before sign up end',
     })
+
+  // TODO: Add support for different event types
+  // check if the eventtype is valid
+  // if (!['presentation', 'dinner', 'other'].includes(eventType))
+  //   throw createError({
+  //     statusCode: 400,
+  //     statusMessage:
+  //       "Eventtype has to be either 'presentation', 'dinner' or 'other'",
+  //   })
 
   // all checks made, so push data to db
   const eventsRef = db.ref('events')
 
   // endtime and description don't have to be defined
   eventsRef.push({
+    // limitedCapacity,
     capacity,
     companyUID,
     date: {
@@ -97,6 +108,7 @@ export default defineEventHandler(async (event) => {
     },
     title,
     registration,
+    // eventType,
   })
 
   sendNoContent(event, 201)

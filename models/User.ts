@@ -11,4 +11,5 @@ export interface User extends TokenData {
   companyUID?: string
   updated: number
   dietaryRestrictions?: any
+  resume: string
 }

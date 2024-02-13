@@ -11,19 +11,19 @@ export default defineEventHandler(async (event) => {
     if (user.companyUID !== companyUID)
       throw createError({
         statusCode: 401,
-        statusMessage: 'Error (event/not-owner).',
+        statusMessage: 'Company users cannot delete events for other companies',
       })
   } else if (!hasAccess(user, ['admin']))
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (firebase/user-not-authorized).',
+      statusMessage: 'User not authenticated',
     })
 
   // Check if input is valid
   if (!eventUID) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (event/missing-event-uid).',
+      statusMessage: 'Missing eventUID',
     })
   }
 

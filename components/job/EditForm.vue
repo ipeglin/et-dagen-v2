@@ -6,8 +6,6 @@
       default: null,
     },
   })
-  const useAlerts = useAlertStore()
-
   // Fetch job data if props are provided
   const auth = useAuthStore()
   const { hasAccess, user } = storeToRefs(auth)
@@ -54,6 +52,39 @@
       : { ...initialState }
   )
 
+  // Alert state
+  const initialAlertState = {
+    show: false,
+    alertRoute: '',
+    type: undefined as AlertType,
+  }
+
+  const alertState = reactive({
+    ...initialAlertState,
+  })
+
+  // Show appropriate success alert after signing up for job
+  const displaySuccessAlert = (alertRoute: string) => {
+    alertState.alertRoute = alertRoute
+    alertState.type = 'success'
+    alertState.show = true
+  }
+
+  // show appropriate error alert after signing up for job
+  const displayErrorAlert = (alertRoute: string) => {
+    alertState.alertRoute = alertRoute
+    alertState.type = 'error'
+    alertState.show = true
+  }
+
+  // Show appropriate error alert for failed API calls
+  const displayErrorAlertFromMessage = (errorMessage: string) => {
+    const content = getAlertContent(errorMessage, 'Job')
+    alertState.alertRoute = content.alertRoute
+    alertState.type = content.type
+    alertState.show = content.show
+  }
+
   const form = ref()
 
   // Boolean control states
@@ -88,19 +119,14 @@
     }
   })
 
-  const validDescription = computed(
-    () => state.description && state.description !== '<p></p>'
-  )
-
   // save changes to existing job
   const saveChanges = async () => {
     // throw error on invalid form
     const { valid } = await form.value.validate()
     try {
-      if (!valid || !validDescription.value)
-        throw new Error('Form is not valid')
+      if (!valid) throw new Error('Form is not valid')
     } catch (error) {
-      useAlerts.alert(getI18nString('alert.error.form.invalid'), 'error')
+      displayErrorAlert('alert.error.form.invalid')
       return
     }
 
@@ -114,23 +140,19 @@
       body: rest,
     })
       .then(() => {
-        useAlerts.alert(
-          getI18nString('alert.success.job.edit.modified'),
-          'success'
-        )
+        displaySuccessAlert('alert.success.job.edit.modified')
         setTimeout(() => navigateTo(localePath('/admin/jobs')), 2000)
       })
-      .catch((error) => getApiResponseAlertContext(error.statusMessage))
+      .catch((error) => displayErrorAlertFromMessage(error.statusMessage))
   }
 
   const createCompany = async () => {
     // throw error on invalid form
     const { valid } = await form.value.validate()
     try {
-      if (!valid || !validDescription.value)
-        throw new Error('Form is not valid')
+      if (!valid) throw new Error('Form is not valid')
     } catch (error) {
-      useAlerts.alert(getI18nString('alert.error.form.invalid'), 'error')
+      displayErrorAlert('alert.error.form.invalid')
       return
     }
 
@@ -140,13 +162,10 @@
       body: state,
     })
       .then(() => {
-        useAlerts.alert(
-          getI18nString('alert.success.job.edit.created'),
-          'success'
-        )
+        displaySuccessAlert('alert.success.job.edit.created')
         setTimeout(() => navigateTo(localePath('/admin/jobs')), 2000)
       })
-      .catch((error) => getApiResponseAlertContext(error.statusMessage))
+      .catch((error) => displayErrorAlertFromMessage(error.statusMessage))
   }
 </script>
 
@@ -159,6 +178,21 @@
     <h3 v-else class="title py-6 mt-4">
       {{ $t('edit.jobs.create.title') }}
     </h3>
+
+    <!-- alert component -->
+    <VSnackbar v-model="alertState.show">
+      {{ $t(`${alertState.alertRoute}`) }}
+
+      <template #actions>
+        <VBtn
+          :color="alertState.type"
+          variant="text"
+          @click="alertState.show = false"
+        >
+          {{ $t('alert.close_alert') }}
+        </VBtn>
+      </template>
+    </VSnackbar>
 
     <!-- edit form -->
     <VForm ref="form" @submit.prevent="saveChanges || createCompany">
@@ -176,10 +210,12 @@
 
         <!-- job description -->
         <VRow>
-          <FormRichTextInput
+          <FormTextareaInput
             v-model="state.description"
-            :label="$t('edit.jobs.attributes.description')"
-            style="width: 100%"
+            :content="{
+              label: $t('edit.jobs.attributes.description'),
+            }"
+            :rules="[useRequiredInput]"
           />
         </VRow>
 

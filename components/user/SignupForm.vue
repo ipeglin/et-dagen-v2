@@ -7,9 +7,8 @@
   } from '@/composables/useForm'
   import { dietaryFlags } from '~/config/app.config'
 
-  const useAlerts = useAlertStore()
-
   const { data: studyProgrammes } = await useFetch('/api/programme')
+
   // alphabetically sort study programmes
   const programmeOptions = computed(() =>
     Object.values(studyProgrammes.value)
@@ -110,19 +109,44 @@
       user.registrationCode ?? undefined // Only send registration code if user is a company
     )
       .catch((error) => {
-        const { type, message } = getApiResponseAlertContext(
-          error.statusMessage
-        )
-        useAlerts.alert(message, type as AlertType)
+        const content = getAlertRouteAndType(error.message)
+
+        alertState.alertRoute = content.route
+        alertState.type = content.type as AlertType
+        alertState.show = true
+
         console.error(error)
       })
       .finally(() => {
         isRegistering.value = false
       })
   }
+
+  const initialAlertState = {
+    show: false,
+    alertRoute: '',
+    type: undefined as AlertType,
+  }
+
+  const alertState = reactive({
+    ...initialAlertState,
+  })
 </script>
 
 <template>
+  <VSnackbar v-model="alertState.show">
+    {{ $t(`${alertState.alertRoute}`) }}
+
+    <template #actions>
+      <v-btn
+        :color="alertState.type"
+        variant="text"
+        @click="alertState.show = false"
+      >
+        {{ $t('alert.close_alert') }}
+      </v-btn>
+    </template>
+  </VSnackbar>
   <VForm ref="form" @submit.prevent="submit">
     <VContainer>
       <VRow>

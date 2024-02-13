@@ -1,8 +1,7 @@
 <template>
   <VApp>
-    <CommonAlert />
     <NuxtLayout>
-      <NuxtPage :keepalive="true" />
+      <NuxtPage />
     </NuxtLayout>
   </VApp>
 </template>

@@ -20,12 +20,12 @@ export default defineEventHandler(async (event) => {
     if (user.companyUID !== companyUID)
       throw createError({
         statusCode: 401,
-        statusMessage: 'Error (event/not-owner).',
+        statusMessage: 'Company users cannot update events for other companies',
       })
   } else if (!hasAccess(user, ['admin']))
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (firebase/user-not-authorized).',
+      statusMessage: 'User not authenticated',
     })
 
   // check if data is defined.
@@ -44,27 +44,27 @@ export default defineEventHandler(async (event) => {
   )
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (general/missing-data).',
+      statusMessage: 'Not all data is defined',
     })
 
   // Check if capacity is legal
   if (typeof capacity !== 'number' && capacity !== null)
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (event/incorrect-capacity).',
+      statusMessage: 'Capacity has to be a number or null',
     })
 
   if (typeof capacity !== 'number' && !(capacity === null) && capacity <= 0)
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (event/wrong-format-capacity).',
+      statusMessage: 'Capacity has to be a number and larger than 0',
     })
 
   // check if endtime is after starttime
   if (date.start > date.end)
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (event/start-after-end).',
+      statusMessage: 'Start time has to be before end time',
     })
 
   // registration window must be before event start
@@ -74,21 +74,32 @@ export default defineEventHandler(async (event) => {
   )
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (event/registration-after-event).',
+      statusMessage:
+        'Sign up start and opt out deadline must be before event start',
     })
 
   // registration window must open before it closes
   if (capacity && registration.start > registration.end)
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (event/registration-start-after-end).',
+      statusMessage: 'Sign up start must be before sign up end',
     })
+
+  // TODO: Add support for different event types
+  // check if the eventtype is valid
+  // if (!['presentation', 'dinner', 'other'].includes(eventType))
+  //   throw createError({
+  //     statusCode: 400,
+  //     statusMessage:
+  //       "Eventtype has to be either 'presentation', 'dinner' or 'other'",
+  //   })
 
   // Get database reference
   const eventRef = db.ref(`events/${eventUID}`)
 
   // Add defined inputs to updates-object
   const updates = {
+    // limitedCapacity,
     capacity,
     companyUID,
     date: {
@@ -102,6 +113,7 @@ export default defineEventHandler(async (event) => {
     },
     title,
     registration,
+    // eventType,
   }
 
   // Update database information

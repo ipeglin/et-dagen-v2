@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   if (!hasAccess(user, ['admin']))
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (firebase/user-not-authorized).',
+      statusMessage: 'User not authorized',
     })
 
   const { description, logo, name, type, webpage } = await readBody(event)
@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
   if (!name || !webpage || !type)
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (company/missing-name-webpage-type).',
+      statusMessage: 'Missing company name, webpage, or type',
     })
 
   const companyRef = await companiesRef.push({

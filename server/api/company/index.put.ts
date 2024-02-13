@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
   if (!isAdmin && !isCompanyAdmin)
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (firebase/user-not-authorized).',
+      statusMessage: 'User not authorized',
     })
 
   // reference to companies
@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
   if (!data)
     throw createError({
       statusCode: 404,
-      statusMessage: 'Error (company/not-found).',
+      statusMessage: 'Company not found',
     })
 
   // only admins can change company types

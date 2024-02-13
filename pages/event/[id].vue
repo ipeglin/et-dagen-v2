@@ -1,7 +1,5 @@
 <script setup lang="ts">
   const useAuth = useAuthStore()
-  const useAlert = useAlertStore()
-  const localePath = useLocalePath()
 
   // get event id from route
   const route = useRoute()
@@ -132,62 +130,75 @@
     () => hasCapacity.value && !alreadyRegistered.value
   )
 
-  const loading = ref(false)
+  // alert state
+  const initialAlertState = {
+    show: false,
+    alertRoute: '',
+    type: undefined as AlertType,
+  }
+
+  const alertState = reactive({
+    ...initialAlertState,
+  })
+
+  // Show appropriate success alert after signing up for event
+  const displaySuccessAlert = (alertRoute: string) => {
+    alertState.alertRoute = alertRoute
+    alertState.type = 'success'
+    alertState.show = true
+  }
+
+  // Show appropriate error alert for failed API calls
+  const displayErrorAlertFromMessage = (errorMessage: string) => {
+    const content = getAlertContent('Error', errorMessage)
+    alertState.alertRoute = content.alertRoute
+    alertState.type = content.type
+    alertState.show = content.show
+
+    console.error(errorMessage)
+  }
+
   // sign up for event
   const signUpForEvent = () => {
-    loading.value = true
-
     $fetch('/api/event/register', {
       method: 'POST',
       body: { eventUID: event.value.uid },
     })
       .then(() => refresh())
-      .then(() =>
-        useAlert.alert(
-          getI18nString('alert.success.event.register.sign_up'),
-          'success'
-        )
-      )
-      .catch((error: any) => {
-        const { type, message } = getApiResponseAlertContext(
-          error.statusMessage
-        )
-        useAlert.alert(message, type as AlertType)
-      })
-      .finally(() => (loading.value = false))
+      .then(() => displaySuccessAlert('alert.success.event.register.sign_up'))
+      .catch((error) => displayErrorAlertFromMessage(error.statusMessage))
   }
 
-  const dialog = ref(false)
   // opt out of event
   const optOutOfEvent = () => {
-    loading.value = true
-
     $fetch('/api/event/register', {
       method: 'DELETE',
       body: { eventUID: event.value.uid },
     })
       .then(() => refresh())
-      .then(() =>
-        useAlert.alert(
-          getI18nString('alert.success.event.register.opt_out'),
-          'success'
-        )
-      )
-      .catch((error) => {
-        const { type, message } = getApiResponseAlertContext(
-          error.statusMessage
-        )
-        useAlert.alert(message, type as AlertType)
-      })
-      .finally(() => {
-        loading.value = false
-        dialog.value = false
-      })
+      .then(() => displaySuccessAlert('alert.success.event.register.opt_out'))
+      .catch((error) => displayErrorAlertFromMessage(error.statusMessage))
   }
 </script>
 
 <template>
   <VContainer class="container">
+    <!-- Vuetify alert component -->
+    <!-- TODO: #121 Make a custom reactive component for VSnackbar that takes in content prop -->
+    <VSnackbar v-model="alertState.show">
+      {{ $t(`${alertState.alertRoute}`) }}
+
+      <template #actions>
+        <VBtn
+          :color="alertState.type"
+          variant="text"
+          @click="alertState.show = false"
+        >
+          {{ $t('alert.close_alert') }}
+        </VBtn>
+      </template>
+    </VSnackbar>
+
     <!-- company logo -->
     <VCard
       class="d-flex justify-center align-center pa-4 image-container"
@@ -203,10 +214,8 @@
 
     <!-- event description -->
     <VCard class="description elevation-4" rounded="lg">
-      <VCardTitle class="description__title">{{ event?.title }}</VCardTitle>
-      <!-- eslint-disable vue/no-v-text-v-html-on-component vue/no-v-html -->
-      <VCardText class="description__text" v-html="event?.description" />
-      <!-- eslint-enable -->
+      <VCardTitle class="title">{{ event?.title }}</VCardTitle>
+      <VCardText class="text">{{ event?.description }}</VCardText>
     </VCard>
 
     <!-- event details -->
@@ -348,16 +357,13 @@
       </VCard>
 
       <!-- Event actions: Sign up perform action -->
-      <VBtn
+      <div
         v-if="!useAuth.isLoggedIn && hasCapacity && !eventFull"
-        rounded="lg"
-        variant="text"
-        class="text-primary px-4 py-2 d-flex justify-center align-center login"
-        prepend-icon="mdi-login"
-        @click="navigateTo(localePath('/user/signin'))"
+        class="text-primary px-4 py-2 d-flex justify-center align-center"
       >
+        <VIcon class="pr-3 pb-1">mdi-lock</VIcon>
         {{ $t('program.event.sign_in_to_register') }}
-      </VBtn>
+      </div>
 
       <div
         v-if="hasEventActions && !showRegistrationAction"
@@ -373,7 +379,6 @@
         <VBtn
           v-if="showSignupButton"
           color="success"
-          :loading="loading"
           block
           variant="flat"
           :ripple="true"
@@ -386,50 +391,18 @@
           {{ $t('program.event.sign_up') }}
         </VBtn>
 
-        <!-- opt out modal -->
-        <VDialog v-if="alreadyRegistered" v-model="dialog" width="500">
-          <template #activator="{ props }">
-            <VBtn
-              v-bind="props"
-              color="primary"
-              block
-              variant="tonal"
-              :ripple="true"
-              density="comfortable"
-            >
-              {{ $t('program.event.opt_out.name') }}
-            </VBtn>
-          </template>
-
-          <template #default="{ isActive }">
-            <VCard rounded="lg" class="text-center pa-6">
-              <h6>{{ $t('program.event.opt_out.confirmtext') }}</h6>
-
-              <div
-                class="d-flex justify-center flex-wrap mt-6"
-                style="gap: 1.5rem"
-              >
-                <VBtn
-                  size="large"
-                  variant="outlined"
-                  color="primary"
-                  :loading="loading"
-                  @click="optOutOfEvent"
-                >
-                  {{ $t('program.event.opt_out.confirm') }}
-                </VBtn>
-                <VBtn
-                  size="large"
-                  flat
-                  color="success"
-                  @click="isActive.value = false"
-                >
-                  {{ $t('program.event.opt_out.abort') }}
-                </VBtn>
-              </div>
-            </VCard>
-          </template>
-        </VDialog>
+        <!-- opt out -->
+        <VBtn
+          v-if="alreadyRegistered"
+          color="primary"
+          block
+          variant="tonal"
+          :ripple="true"
+          density="comfortable"
+          @click.stop="optOutOfEvent"
+        >
+          {{ $t('program.event.opt_out') }}
+        </VBtn>
       </div>
     </div>
   </VContainer>
@@ -445,11 +418,6 @@
       content: '' !important;
     }
   }
-
-  .login {
-    font-size: 1rem;
-  }
-
   .container {
     display: grid;
     width: 100vw;
@@ -467,28 +435,6 @@
 
     .description {
       grid-area: description;
-
-      &::v-deep {
-        li {
-          list-style-position: inside;
-
-          p {
-            display: inline;
-          }
-        }
-
-        h5 {
-          font-size: 1.15rem !important;
-        }
-
-        h6 {
-          font-size: 1.05rem !important;
-        }
-      }
-
-      &__text {
-        white-space: pre-line;
-      }
     }
     .details {
       grid-area: details;

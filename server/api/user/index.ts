@@ -8,13 +8,13 @@ export default defineEventHandler(async (event) => {
   if (!decodedToken)
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (firebase/user-not-authorized).',
+      statusMessage: 'User not authenticated',
     })
 
   if (!user)
     throw createError({
       statusCode: 404,
-      statusMessage: 'Error (user/not-found).',
+      statusMessage: 'User data not found',
     })
 
   // get scope from query params

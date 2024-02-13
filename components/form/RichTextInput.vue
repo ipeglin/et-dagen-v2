@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { useEditor, EditorContent } from '@tiptap/vue-3'
-  // eslint-disable-next-line import/no-named-as-default
+
   import StarterKit from '@tiptap/starter-kit'
 
   const props = defineProps({

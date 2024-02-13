@@ -42,10 +42,8 @@
 
     <!-- job description -->
     <VCard class="description elevation-4" rounded="lg">
-      <VCardTitle class="description__title">{{ job?.title }}</VCardTitle>
-      <!-- eslint-disable vue/no-v-text-v-html-on-component vue/no-v-html -->
-      <VCardText class="description__text" v-html="job?.description" />
-      <!-- eslint-enable -->
+      <VCardTitle class="title">{{ job?.title }}</VCardTitle>
+      <VCardText class="text">{{ job?.description }}</VCardText>
     </VCard>
 
     <!-- job details -->
@@ -137,28 +135,6 @@
 
     .description {
       grid-area: description;
-
-      &::v-deep {
-        li {
-          list-style-position: inside;
-
-          p {
-            display: inline;
-          }
-        }
-
-        h5 {
-          font-size: 1.15rem !important;
-        }
-
-        h6 {
-          font-size: 1.05rem !important;
-        }
-      }
-
-      &__text {
-        white-space: pre-line;
-      }
     }
     .details {
       grid-area: details;

@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   if (!decodedToken)
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (firebase/user-not-authenticated).',
+      statusMessage: 'User not authenticated',
     })
 
   // get request body and query param
@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
   )
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (user/missing-programme)',
+      statusMessage: 'Missing study program',
     })
 
   // only admins can modify usertypes and other users than their own
@@ -53,7 +53,7 @@ export default defineEventHandler(async (event) => {
     if (!isValid)
       throw createError({
         statusCode: 401,
-        statusMessage: 'Error (user/invalid-code).',
+        statusMessage: 'Invalid registration code',
       })
 
     userType = 'company'

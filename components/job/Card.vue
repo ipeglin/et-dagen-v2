@@ -23,47 +23,48 @@
 </script>
 
 <template>
-  <NuxtLink :to="localePath(`/jobs/${content.jobUID}`)">
-    <div class="job-wrapper d-flex rounded-lg elevation-2 px-md-7 py-md-3 my-4">
-      <NuxtImg :src="content.companyLogo" />
-      <VDivider vertical class="my-2 ml-2" />
-      <VCard
-        class="flex-grow-1"
-        flat
-        :subtitle="
-          $t(
-            `admin.jobs.attributes.jobtype.${content.jobType.replace('-', '_')}`
-          )
-        "
-      >
-        <template #title>
-          {{ content.title }}
-        </template>
+  <div
+    class="job-wrapper d-flex rounded-lg elevation-2 px-md-7 py-md-3"
+    @click="navigateTo(localePath(`/jobs/${content.jobUID}`))"
+  >
+    <NuxtImg :src="content.companyLogo" />
+    <VDivider vertical class="my-2 ml-2" />
+    <VCard
+      class="flex-grow-1"
+      flat
+      :subtitle="
+        $t(`admin.jobs.attributes.jobtype.${content.jobType.replace('-', '_')}`)
+      "
+    >
+      <template #title>
+        {{ content.title }}
+      </template>
 
-        <template #subtitle>
-          <div class="d-flex justify-space-between">
-            <span class="title mr-1">
-              {{
-                $t(
-                  `admin.jobs.attributes.jobtype.${content.jobType.replace(
-                    '-',
-                    '_'
-                  )}`
-                )
-              }}
-              -
-              {{ content.location }}
-            </span>
-            <span class="d-none d-sm-flex">
-              {{ $t('jobs.deadline') }}: {{ date.getDate() }}.
-              {{ getFullMonthFromNumber(date.getMonth()) }}
-              {{ date.getFullYear() }}
-            </span>
-          </div>
-        </template>
-      </VCard>
-    </div>
-  </NuxtLink>
+      <template #subtitle>
+        <div class="d-flex justify-space-between">
+          <span class="title mr-1">
+            {{
+              $t(
+                `admin.jobs.attributes.jobtype.${content.jobType.replace(
+                  '-',
+                  '_'
+                )}`
+              )
+            }}
+            -
+            {{ content.location }}
+          </span>
+          <span class="d-none d-sm-flex">
+            {{ $t('jobs.deadline') }}: {{ date.getDate() }}.
+            {{ getFullMonthFromNumber(date.getMonth()) }}
+            {{ date.getFullYear() }}
+          </span>
+        </div>
+      </template>
+
+      <p class="px-4 mb-4 text-subtitle-2">{{ content.description }}</p>
+    </VCard>
+  </div>
 </template>
 
 <style scoped lang="scss">

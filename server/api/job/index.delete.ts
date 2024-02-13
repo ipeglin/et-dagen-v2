@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   if (!jobUID)
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (job/missing-job-uid).',
+      statusMessage: 'Missing jobUID',
     })
 
   // reference to jobs
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
   if (!data)
     throw createError({
       statusCode: 404,
-      statusMessage: 'Error (job/not-found).',
+      statusMessage: 'Job not found',
     })
 
   const { companyUID } = data[Object.keys(data)[0]]
@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
   if (!isAdmin && !isCompanyAdmin)
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (firebase/user-not-authorized).',
+      statusMessage: 'User not authorized',
     })
 
   // remove company

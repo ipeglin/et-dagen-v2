@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   if (!user)
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (firebase/not-signed-in).',
+      statusMessage: 'Not signed in',
     })
   // check if the user is admin
   const isAdmin = hasAccess(user, ['admin'])
@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
   if (!isAdmin && uid !== user.uid)
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (firebase/user-not-authorized).',
+      statusMessage: 'User not authorized',
     })
   const displayName = newData.name
   const newEmail = newData.email

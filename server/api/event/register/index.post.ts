@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   if (!user) {
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (firebase/auth/user-not-found).',
+      statusMessage: 'Firebase: Error (auth/user-not-found).',
     })
   }
 
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
   if (!eventUID) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (event/missing-event-id).',
+      statusMessage: 'Events: Error (event/missing-event-id).',
     })
   }
 
@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
   if (userUID && userUID !== user.uid && !hasAccess(user, ['admin'])) {
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (event/register/non-admin-user).',
+      statusMessage: 'Events: Error (register/non-admin-user).',
     })
   }
 
@@ -39,14 +39,14 @@ export default defineEventHandler(async (event) => {
   if (!data || !data[eventUID]) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Error (event/not-found).',
+      statusMessage: 'Events: Error (event/event-doesnt-exists).',
     })
   }
 
   if (!data[eventUID].capacity) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Error (event/register/registration-unnecessary).',
+      statusMessage: 'Events: Error (register/registration-unnecessary).',
     })
   }
 
@@ -59,7 +59,7 @@ export default defineEventHandler(async (event) => {
   ) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Error (event/register/registration-closed).',
+      statusMessage: 'Events: Error (register/registration-closed).',
     })
   }
 
@@ -67,7 +67,7 @@ export default defineEventHandler(async (event) => {
     await auth.getUser(userUID).catch(() => {
       throw createError({
         statusCode: 401,
-        statusMessage: 'Error (user/doesnt-exist).',
+        statusMessage: 'Events: Error (register/user-not-exist).',
       })
     })
 
@@ -105,7 +105,7 @@ export default defineEventHandler(async (event) => {
   if (Object.values(data[eventUID].attendants).includes(userUID || user.uid)) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Error (event/register/already-registered).',
+      statusMessage: 'Events: Error (register/already-registered).',
     })
   }
 
@@ -115,7 +115,7 @@ export default defineEventHandler(async (event) => {
   ) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Error (event/register/event-is-full).',
+      statusMessage: 'Events: Error (register/event-is-full).',
     })
   }
 

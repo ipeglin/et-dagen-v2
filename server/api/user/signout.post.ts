@@ -8,7 +8,7 @@ export default defineEventHandler((event) => {
   if (!user)
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (firebase/not-signed-in).',
+      statusMessage: 'Not signed in',
     })
 
   deleteCookie(event, '_token')

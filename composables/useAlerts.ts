@@ -1,41 +1,154 @@
-// get server response message
-// input format: 'ErrorType (subCatergory/subsubCatergory/error-message)'
-// categories followed by / are optional
-export const getApiResponseAlertContext = (response: string) => {
-  const nuxtApp = useNuxtApp()
+const errorMessageMap = new Map([
+  [
+    'Firebase: Error (auth/email-already-in-use).',
+    {
+      source: 'firebase',
+      type: 'error',
+      message: 'email_in_use',
+    },
+  ],
+  [
+    'Invalid registration code',
+    {
+      source: 'server',
+      type: 'error',
+      message: 'invalid_registration_code',
+    },
+  ],
+  [
+    'Firebase: Error (auth/invalid-email).',
+    {
+      source: 'firebase',
+      type: 'error',
+      message: 'invalid_email',
+    },
+  ],
+  [
+    'Firebase: Error (auth/user-not-found).',
+    {
+      source: 'firebase',
+      type: 'error',
+      message: 'user_not_found',
+    },
+  ],
+  [
+    'Firebase: Error (auth/wrong-password).',
+    {
+      source: 'firebase',
+      type: 'error',
+      message: 'wrong_password',
+    },
+  ],
+  [
+    'Events: Error (register/event-is-full).',
+    {
+      source: 'event.register',
+      type: 'error',
+      message: 'event_is_full',
+    },
+  ],
+  [
+    'Events: Error (register/already-registered).',
+    {
+      source: 'event.register',
+      type: 'error',
+      message: 'already_registered',
+    },
+  ],
+  [
+    'Events: Error (event/event-doesnt-exists).',
+    {
+      source: 'event',
+      type: 'error',
+      message: 'event_doesnt_exist',
+    },
+  ],
+  [
+    'Events: Error (event/missing-event-id).',
+    {
+      source: 'event',
+      type: 'error',
+      message: 'missing_event_id',
+    },
+  ],
+  [
+    'Events: Error (register/user-not-registered).',
+    {
+      source: 'event.register',
+      type: 'error',
+      message: 'user_not_registered',
+    },
+  ],
+  [
+    'Events: Error (register/registration-unnecessary).',
+    {
+      source: 'event.register',
+      type: 'error',
+      message: 'registration_unnecessary',
+    },
+  ],
+  [
+    'Events: Error (register/non-admin-user).',
+    {
+      source: 'event.register',
+      type: 'error',
+      message: 'non_admin_user',
+    },
+  ],
+  [
+    'Events: Error (register/registration-closed).',
+    {
+      source: 'event.register',
+      type: 'error',
+      message: 'closed',
+    },
+  ],
+  [
+    'Event Error: start-time-has-to-be-before-end-time',
+    {
+      source: 'event.register',
+      type: 'error',
+      message: 'end_time_before_start_time',
+    },
+  ],
+])
 
-  if (!response)
-    return { type: 'error', message: nuxtApp.$i18n.t('alert.default_message') }
+export type AlertType = 'error' | 'info' | 'success' | 'warning' | undefined
+export const getAlertTypeFromErrorMessage = (errorMessage: string) => {
+  return (errorMessageMap.get(errorMessage)?.type || 'error') as AlertType
+} // will always return "error" as AlertType
 
-  // split response to get type and message
-  const [responseType, message] = response.toLowerCase().split(' ') as [
-    AlertType,
-    string
-  ]
+export const mapErrorMessageToAlertInfo = (errorMessage: string) => {
+  return errorMessageMap.get(errorMessage) || 'missing_error'
+}
 
-  // if unknown response type or incorrect format, return input
-  if (!alertTypes.includes(responseType as AlertType))
-    return { type: undefined, message: response }
+export const getI18nAlertRoute = (errorMessage: string) => {
+  const alert = mapErrorMessageToAlertInfo(errorMessage)
+  if (alert === 'missing_error') return 'alert.error.default'
 
-  // format message
-  let formattedMessage: string = message
-  formattedMessage = formattedMessage
-    .slice(0, -1) // remove period
-    .replaceAll('/', '.')
-    .replace('(', '')
-    .replace(')', '')
+  const { source, type, message } = alert
+  return `alert.${type}.${source}.${message}`
+}
 
-  // get error message from i18n
-  const errorMessage = nuxtApp.$i18n.t(
-    `alert.api.${responseType}.${formattedMessage}`
+export const getAlertRouteAndType = (errorMessage: string) => {
+  return {
+    type: getAlertTypeFromErrorMessage(errorMessage),
+    route: getI18nAlertRoute(errorMessage),
+  }
+}
+
+export const getAlertContent = (
+  errorType: string,
+  errorMessage: string,
+  showAlert = true
+) => {
+  const content = getAlertRouteAndType(
+    `${errorType} Error: ${errorMessage.toLowerCase().replaceAll(' ', '-')}`
   )
 
-  // message includes alert. if not found
-  if (errorMessage.includes('alert.') || !responseType || !formattedMessage)
-    return { type: 'error', message: nuxtApp.$i18n.t('alert.default_message') }
-
   return {
-    type: responseType,
-    message: errorMessage,
+    alertRoute: content.route,
+    type: content.type as AlertType,
+    show: showAlert,
   }
 }

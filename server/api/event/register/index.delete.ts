@@ -1,4 +1,4 @@
-// DELETE /api/event/event/register/:eventUID
+// DELETE /api/event/register/:eventUID
 
 // endpoint for opting out of an event
 export default defineEventHandler(async (event) => {
@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   if (!user) {
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (firebase/user-not-found).',
+      statusMessage: 'Firebase: Error (auth/user-not-found).',
     })
   }
 
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
   if (!eventUID) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (event/missing-event-id).',
+      statusMessage: 'Event: Error (event/missing-event-id).',
     })
   }
 
@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
   if (userUID && userUID !== user.uid && !hasAccess(user, ['admin'])) {
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (event/register/not-owner).',
+      statusMessage: 'Events: Error (register/non-admin-user).',
     })
   }
 
@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
   if (!data || !data[eventUID]) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Error (event/not-found).',
+      statusMessage: 'Events: Error (event/event-doesnt-exists).',
     })
   }
 
@@ -53,7 +53,7 @@ export default defineEventHandler(async (event) => {
   ) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Error (event/register/registration-closed).',
+      statusMessage: 'Events: Error (register/registration-closed).',
     })
   }
 
@@ -73,7 +73,7 @@ export default defineEventHandler(async (event) => {
   if (!attendantUID) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Error (event/register/user-not-registered).',
+      statusMessage: 'Events: Error (register/user-not-registered).',
     })
   }
 

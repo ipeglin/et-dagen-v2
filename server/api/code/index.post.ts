@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   if (!hasAccess(user, ['admin']))
     throw createError({
       statusCode: 401,
-      statusMessage: 'Error (firebase/user-not-authorized).',
+      statusMessage: 'User not authorized',
     })
 
   const { companyUID } = getQuery(event)
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
   if (!companyUID)
     throw createError({
       statusCode: 400,
-      statusMessage: 'Error (code/missing-company-uid).',
+      statusMessage: 'Missing companyUID',
     })
 
   // reference to companies
@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
   if (!data)
     throw createError({
       statusCode: 404,
-      statusMessage: 'Error (company/not-found).',
+      statusMessage: 'Company not found',
     })
 
   // reference to registration codes in db

@@ -5,7 +5,6 @@
     // route is protected
     protected: true,
   })
-
   const dietaryIcon = computed(() => {
     return (restriction: string) => {
       return dietaryFlags.find((flag) => flag.name === restriction)?.icon
@@ -26,31 +25,43 @@
   const authStore = useAuthStore()
   const { user } = storeToRefs(authStore)
 
-  const { data } = await useFetch('/api/event')
+  const uploadResume = async (event: any) => {
+    const resumeFile = event.target.files[0]
+    if (!resumeFile) return
+    const bodyData = new FormData()
+    bodyData.append('file', resumeFile)
+    bodyData.append('userUID', auth.user?.uid)
 
-  // embed uid into object
-  const events = computed(() => embedKeyIntoObjectValues(data.value))
-
-  // return list of the events the user is signed up for
-  const userEvents = computed(() => {
-    if (!events.value) return []
-
-    const filteredEvents = events.value.filter((event: any) =>
-      Object.values(event?.attendants ?? {}).includes(user.value?.uid)
-    )
-
-    return filteredEvents.map((event: any) => {
-      return {
-        title: event.title,
-        uid: event.uid,
-      }
+    await useFetch('/api/resume', {
+      method: 'POST',
+      body: bodyData,
     })
-  })
+      .then(() => {
+        location.reload()
+      })
+      .catch((error) => console.log(error.message))
+  }
+
+  const deleteResume = async () => {
+    await useFetch('/api/resume', {
+      method: 'DELETE',
+      body: {
+        userUID: auth.user?.uid,
+      },
+    })
+      .then(() => location.reload())
+      .catch((error) => console.log(error.message))
+  }
+
+  const getFileName = (URL: string) => {
+    const list = URL.split('/')
+    return list[list.length - 1]
+  }
 </script>
 
 <template>
-  <VContainer class="d-flex justify-center flex-wrap mt-16" style="gap: 16px">
-    <VCard class="pa-4" style="width: 700px; max-width: 90vw" elevation="4">
+  <VContainer class="d-flex justify-center align-center mt-16">
+    <VCard class="pa-4" style="width: 800px; max-width: 90vw" elevation="4">
       <VRow class="d-flex justify-center h-100 ma-0">
         <VCol
           cols="12"
@@ -67,7 +78,7 @@
           </NuxtLink>
         </VCol>
         <VCol v-if="!auth.hasAccess(['company'])" cols="12" lg="8">
-          <h6>{{ $t('user.information.title') }}</h6>
+          <h6>Information</h6>
           <VDivider class="my-2" />
           <p class="my-2">
             <strong>{{ $t('user.information.studyprogramme') }}: </strong>
@@ -108,28 +119,31 @@
           </div>
         </VCol>
       </VRow>
-    </VCard>
-
-    <!-- list of user events -->
-    <VCard
-      v-if="userEvents.length"
-      color="primary"
-      class="align-self-stretch pa-7"
-      style="width: 350px; max-width: 90vw; min-height: 200px !important"
-      elevation="4"
-    >
-      <h6>{{ $t('user.information.events') }}</h6>
-      <VDivider class="mt-2" />
-
-      <VCardText>
-        <ul class="text-body-1">
-          <li v-for="event in userEvents" :key="event.uid">
-            <NuxtLink :to="localePath(`/event/${event.uid}`)">
-              {{ event.title }}
-            </NuxtLink>
-          </li>
-        </ul>
-      </VCardText>
+      <div class="pt-10">
+        <h6 v-if="auth.user?.resume" class="pb-4">
+          Your resume:
+          <NuxtLink
+            :to="auth.user.resume"
+            :external="true"
+            target="_blank"
+            class="text-blue"
+            >{{ getFileName(auth.user.resume) }}</NuxtLink
+          >
+        </h6>
+        <VRow>
+          <VCol cols="6">
+            <VFileInput
+              accept="application/pdf"
+              label="Upload resume"
+              color="standard"
+              @change="uploadResume"
+            />
+          </VCol>
+          <VCol v-if="auth.user?.resume" cols="6">
+            <VBtn color="error" @click="deleteResume">Delete resume</VBtn>
+          </VCol>
+        </VRow>
+      </div>
     </VCard>
   </VContainer>
 </template>
@@ -145,13 +159,5 @@
     li {
       width: 50%;
     }
-  }
-
-  a {
-    text-decoration: underline;
-  }
-
-  a:hover {
-    text-decoration: none;
   }
 </style>
