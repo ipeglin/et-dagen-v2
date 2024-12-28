@@ -114,8 +114,7 @@
     <VCard
       v-if="userEvents.length"
       color="primary"
-      class="align-self-stretch pa-7"
-      style="width: 350px; max-width: 90vw; min-height: 200px !important"
+      class="user-event-card"
       elevation="4"
     >
       <h6>{{ $t('user.information.events') }}</h6>
@@ -135,6 +134,7 @@
 </template>
 
 <style scoped lang="scss">
+  @use 'vuetify/settings';
   .allergies {
     flex-wrap: wrap;
     list-style: none;
@@ -153,5 +153,16 @@
 
   a:hover {
     text-decoration: none;
+  }
+  .user-event-card {
+    max-width: 90vw;
+    min-height: 200px !important;
+    width: 700px;
+    padding: 25px;
+    align-self: stretch;
+
+    @media #{map-get(settings.$display-breakpoints, "lg")} {
+      width: 350px !important;
+    }
   }
 </style>
